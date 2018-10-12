@@ -15,14 +15,14 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var viewModel: MainViewModel
 
+    val rv  by lazy { findViewById<RecyclerView>(R.id.rv) }
+    val srl by lazy { findViewById<SwipeRefreshLayout>(R.id.srl) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
-
-        val rv = findViewById<RecyclerView>(R.id.rv)
-        val srl = findViewById<SwipeRefreshLayout>(R.id.srl)
 
         rv.layoutManager = LinearLayoutManager(this)
 
@@ -32,9 +32,17 @@ class MainActivity : AppCompatActivity() {
             viewModel.refresh()
         }
 
-        viewModel.pagedList.observe(this, Observer{
+        viewModel.uiList.observe(this, Observer{
             srl.isRefreshing = false
             pagedAdapter.submitList(it)
         })
+
+        getInitialData()
+    }
+
+    // First data load
+    private fun getInitialData() {
+        srl.isRefreshing = true
+        viewModel.refresh()
     }
 }
