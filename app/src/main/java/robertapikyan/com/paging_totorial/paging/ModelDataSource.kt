@@ -11,15 +11,20 @@ import robertapikyan.com.paging_totorial.services.ApiService
 
 class ModelDataSource : PositionalDataSource<ItemModel>() {
 
+    companion object {
+        const val TAG = "ModelDataSource";
+    }
+
     override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<ItemModel>) {
-        Log.d("paging","ModelDataSource:loadRange ")
+        Log.d("paging","ModelDataSource:loadRange startPosition= ${params.startPosition} loadSize= ${params.loadSize}")
         val items = ApiService.getItems(params.startPosition, params.loadSize)
         callback.onResult(items)
     }
 
     override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<ItemModel>) {
-        Log.d("paging","ModelDataSource:loadInitial ")
-        val items = ApiService.getItems(params.requestedStartPosition, params.pageSize)
-        callback.onResult(items,params.requestedStartPosition)
+        Log.d("paging","ModelDataSource:loadInitial startPosition= ${params.requestedStartPosition} loadSize= ${params.pageSize}")
+        // sometimes params.requestedStartPosition value is 9, that's why we replaced params.requestedStartPosition with 0
+        val items = ApiService.getItems(0, params.pageSize) // *here changed params.requestedStartPosition to 0
+        callback.onResult(items,0)// *and here changed params.requestedStartPosition to 0
     }
 }
